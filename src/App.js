@@ -1,5 +1,7 @@
 import React, { Component, useState } from 'react';
 import FileUpload from './FileUpload';
+import { sliderBottom } from 'd3-simple-slider';
+import * as d3 from 'd3';
 import './App.css';
 
 class Dashboard extends Component {
@@ -10,6 +12,22 @@ class Dashboard extends Component {
       dropdown_scatter: ["bpm","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%"],
       x1: "",
       y1: "",
+      x2: "",
+      y2: "",
+      filtered_data: [    // Temp -> hardcoded for testing
+        {track_name: "Seven (feat. Latto) (Explicit Ver.)", artist_s_name: "Latto, Jung Kook", artist_count: 2, released_year: 2023, released_month: 7, released_day: 14, in_spotify_playlists: 553, in_spotify_charts: 147, streams: 141381703, in_apple_playlists: 43, in_apple_charts: 263, in_deezer_playlists: 45, in_deezer_charts: 10, in_shazam_charts: 826, bpm: 125, key: "B", mode: "Major", danceability__: 80, valence__: 89, energy__: 83, acousticness__: 31, instrumentalness__: 0, liveness__: 8, speechiness__: 4, cover_url: "Not Found"},
+        {track_name: "LALA", artist_s_name: "Myke Towers", artist_count: 1, released_year: 2023, released_month: 3, released_day: 23, in_spotify_playlists: 1474, in_spotify_charts: 48, streams: 133716286, in_apple_playlists: 48, in_apple_charts: 126, in_deezer_playlists: 58, in_deezer_charts: 14, in_shazam_charts: 382, bpm: 92, key: "C#", mode: "Major", danceability__: 71, valence__: 61, energy__: 74, acousticness__: 7, instrumentalness__: 0, liveness__: 10, speechiness__: 4, cover_url: "https://i.scdn.co/image/ab67616d0000b2730656d5ce813ca3cc4b677e05"},
+        {track_name: "vampire", artist_s_name: "Olivia Rodrigo", artist_count: 1, released_year: 2023, released_month: 6, released_day: 30, in_spotify_playlists: 1397, in_spotify_charts: 113, streams: 140003974, in_apple_playlists: 94, in_apple_charts: 207, in_deezer_playlists: 91, in_deezer_charts: 14, in_shazam_charts: 949, bpm: 138, key: "F", mode: "Major", danceability__: 51, valence__: 32, energy__: 53, acousticness__: 17, instrumentalness__: 0, liveness__: 31, speechiness__: 6, cover_url: "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d"},
+        {track_name: "Cruel Summer", artist_s_name: "Taylor Swift", artist_count: 1, released_year: 2019, released_month: 8, released_day: 23, in_spotify_playlists: 7858, in_spotify_charts: 100, streams: 800840817, in_apple_playlists: 116, in_apple_charts: 207, in_deezer_playlists: 125, in_deezer_charts: 12, in_shazam_charts: 548, bpm: 170, key: "A", mode: "Major", danceability__: 55, valence__: 58, energy__: 72, acousticness__: 11, instrumentalness__: 0, liveness__: 11, speechiness__: 15, cover_url: "https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647"},
+        {track_name: "WHERE SHE GOES", artist_s_name: "Bad Bunny", artist_count: 1, released_year: 2023, released_month: 5, released_day: 18, in_spotify_playlists: 3133, in_spotify_charts: 50, streams: 303236322, in_apple_playlists: 84, in_apple_charts: 133, in_deezer_playlists: 87, in_deezer_charts: 15, in_shazam_charts: 425, bpm: 144, key: "A", mode: "Minor", danceability__: 65, valence__: 23, energy__: 80, acousticness__: 14, instrumentalness__: 63, liveness__: 11, speechiness__: 6, cover_url: "https://i.scdn.co/image/ab67616d0000b273ab5c9cd818ad6ed3e9b79cd1"}
+      ],
+      original_data: [    // Temp -> hardcoded for testing
+        {track_name: "Seven (feat. Latto) (Explicit Ver.)", artist_s_name: "Latto, Jung Kook", artist_count: 2, released_year: 2023, released_month: 7, released_day: 14, in_spotify_playlists: 553, in_spotify_charts: 147, streams: 141381703, in_apple_playlists: 43, in_apple_charts: 263, in_deezer_playlists: 45, in_deezer_charts: 10, in_shazam_charts: 826, bpm: 125, key: "B", mode: "Major", danceability__: 80, valence__: 89, energy__: 83, acousticness__: 31, instrumentalness__: 0, liveness__: 8, speechiness__: 4, cover_url: "Not Found"},
+        {track_name: "LALA", artist_s_name: "Myke Towers", artist_count: 1, released_year: 2023, released_month: 3, released_day: 23, in_spotify_playlists: 1474, in_spotify_charts: 48, streams: 133716286, in_apple_playlists: 48, in_apple_charts: 126, in_deezer_playlists: 58, in_deezer_charts: 14, in_shazam_charts: 382, bpm: 92, key: "C#", mode: "Major", danceability__: 71, valence__: 61, energy__: 74, acousticness__: 7, instrumentalness__: 0, liveness__: 10, speechiness__: 4, cover_url: "https://i.scdn.co/image/ab67616d0000b2730656d5ce813ca3cc4b677e05"},
+        {track_name: "vampire", artist_s_name: "Olivia Rodrigo", artist_count: 1, released_year: 2023, released_month: 6, released_day: 30, in_spotify_playlists: 1397, in_spotify_charts: 113, streams: 140003974, in_apple_playlists: 94, in_apple_charts: 207, in_deezer_playlists: 91, in_deezer_charts: 14, in_shazam_charts: 949, bpm: 138, key: "F", mode: "Major", danceability__: 51, valence__: 32, energy__: 53, acousticness__: 17, instrumentalness__: 0, liveness__: 31, speechiness__: 6, cover_url: "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d"},
+        {track_name: "Cruel Summer", artist_s_name: "Taylor Swift", artist_count: 1, released_year: 2019, released_month: 8, released_day: 23, in_spotify_playlists: 7858, in_spotify_charts: 100, streams: 800840817, in_apple_playlists: 116, in_apple_charts: 207, in_deezer_playlists: 125, in_deezer_charts: 12, in_shazam_charts: 548, bpm: 170, key: "A", mode: "Major", danceability__: 55, valence__: 58, energy__: 72, acousticness__: 11, instrumentalness__: 0, liveness__: 11, speechiness__: 15, cover_url: "https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647"},
+        {track_name: "WHERE SHE GOES", artist_s_name: "Bad Bunny", artist_count: 1, released_year: 2023, released_month: 5, released_day: 18, in_spotify_playlists: 3133, in_spotify_charts: 50, streams: 303236322, in_apple_playlists: 84, in_apple_charts: 133, in_deezer_playlists: 87, in_deezer_charts: 15, in_shazam_charts: 425, bpm: 144, key: "A", mode: "Minor", danceability__: 65, valence__: 23, energy__: 80, acousticness__: 14, instrumentalness__: 63, liveness__: 11, speechiness__: 6, cover_url: "https://i.scdn.co/image/ab67616d0000b273ab5c9cd818ad6ed3e9b79cd1"}
+      ],
     };
   }
 
@@ -18,32 +36,65 @@ class Dashboard extends Component {
   };  
 
   componentDidMount() {
-
+    // should remove eventually from mounting
+    this.scatter()
   }
 
   componentDidUpdate() {
-
-    // Placeholder data (currently doesn't run)
-    const data = []
-    //const headers = ["track_name","artist(s)_name","artist_count","released_year","released_month","released_day","in_spotify_playlists","in_spotify_charts","streams","in_apple_playlists","in_apple_charts","in_deezer_playlists","in_deezer_charts","in_shazam_charts","bpm","key","mode","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%","cover_url"];
-    //this.setState({ headers })
-
-    // When data is present, run the following (will implement later)
-
-    let necessaryData = this.dataFilter(data, )
+    this.scatter()
   }
 
-  // Takes in some data, and filters it out based on what values where in the dropdowns & slider
-  dataFilter(data) {
-
+  scatter() {
+    const data = this.state.filtered_data;
+  
+    // Define a year slider
+    const sliderRange = sliderBottom()
+      .min(d3.min(data, d => d.released_year))
+      .max(d3.max(data, d => d.released_year))
+      .step(1)
+      .width(300)
+      .ticks(data.length)
+      .tickFormat(d3.format(""))
+      .default([
+        d3.min(data, d => d.released_year),
+        d3.max(data, d => d.released_year)
+      ])
+      .fill('#85bb65')
+      .on('onchange', val => {
+        const f_data = this.state.original_data.filter(d =>
+          d.released_year >= val[0] && d.released_year <= val[1]
+        );
+        this.setState({ filtered_data: f_data });
+      });
+  
+    // Add slider to page
+    const gRange = d3.select('.slider-year')
+      .attr('width', 500)
+      .attr('height', 100)
+      .selectAll('.slider-g')
+      .data([null])
+      .join('g')
+      .attr('class', 'slider-g')
+      .attr('transform', 'translate(90,30)');
+  
+    gRange.call(sliderRange);
   }
+  
 
   // Handle interactive selections for scatterplot
   pick_xValue_4Scatterplot = (event) => {
-    this.setState(event.target.value)
+    this.setState({ x1: event.target.value })
   }
   pick_yValue_4Scatterplot = (event) => {
-    this.setState(event.target.value)
+    this.setState({ y1: event.target.value })
+  }
+
+  // Handle interactive selections for Stacked Bar Chart
+  pick_xValue_4Stacked = (event) => {
+    this.setState({ x1:event.target.value })
+  }
+  pick_yValue_4Stacked = (event) => {
+    this.setState({ y1: event.target.value })
   }
 
   render = () => {
@@ -53,29 +104,64 @@ class Dashboard extends Component {
       <div className="dashboard">
         <FileUpload onDataUpload={this.handleDataUpload} />
 
-        {/** X dropdown */}
-        <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
-          {dropdown_scatter.map((attr, index) => (
-              <option key={index} value={attr.toLowerCase()}>
-                {attr}
-              </option>
-          ))}
-        </select> 
+        <div id='left-visual'>
+          {/** X dropdown (Scatter) */}
+          <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
+          <option disabled selected value> -- select an option -- </option>
+            {dropdown_scatter.map((attr, index) => (
+                <option key={index} value={attr.toLowerCase()}  disabled={this.state.y1 === attr.toLowerCase()}>
+                  {attr}
+                </option>
+            ))}
+          </select> 
 
-        {/** Y dropdown */}
-        <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
-          {dropdown_scatter.map((attr, index) => (
-              <option key={index} value={attr.toLowerCase()}>
-                {attr}
-              </option>
-          ))}
-        </select> 
+          {/** Scatterplot + slider in here */}
+          <svg className='scatterplot'></svg>
+          <svg className='slider-year'></svg>
 
-        {/** Scatterplot & Stacked Bar Chart Go in here */}
-        <svg className='visualizer'></svg>
+          {/** Y dropdown (Scatter) */}
+          <select name="y-attr-scatter" id="y-attr-scatter" onChange={this.pick_yValue_4Scatterplot}>
+          <option disabled selected value> -- select an option -- </option>
+            {dropdown_scatter.map((attr, index) => (
+                <option key={index} value={attr.toLowerCase()} disabled={this.state.x1 === attr.toLowerCase()}>
+                  {attr}
+                </option>
+            ))}
+          </select> 
+        </div>
+        {/** ------------------------------------------------------ */}
+        {/** Will use later 
+          <div id='left-visual'>
+                    {/** X dropdown (stacked) }
+                    <select name="x-attr-stacked" id="x-attr-stacked" onChange={this.pick_xValue_4Stacked}>
+                      {dropdown_scatter.map((attr, index) => (
+                          <option key={index} value={attr.toLowerCase()}>
+                            {attr}
+                          </option>
+                      ))}
+                    </select> 
+
+                    {/** Stacked Bar Chart  in here }
+                  <svg className='stackedBar'></svg>
+                  <svg className='stream-slider'></svg>
+
+                    {/** Y dropdown (stacked) }
+                    <select name="x-attr-stacked" id="x-attr-stacked" onChange={this.pick_yValue_4Stacked}>
+                      {dropdown_scatter.map((attr, index) => (
+                          <option key={index} value={attr.toLowerCase()}>
+                            {attr}
+                          </option>
+                      ))}
+                    </select> 
+                  </div>
+          */}
+
       </div>
     );
   }
 }
 
 export default Dashboard;
+
+
+
