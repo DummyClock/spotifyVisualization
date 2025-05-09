@@ -116,8 +116,11 @@ class Dashboard extends Component {
           </select> 
 
           {/** Scatterplot + slider in here */}
-          <svg className='scatterplot'></svg>
-          <svg className='slider-year'></svg>
+          <g>
+            <svg className='scatterplot' >
+            </svg>
+            <svg className='slider-year'></svg>
+          </g>
 
           {/** Y dropdown (Scatter) */}
           <select name="y-attr-scatter" id="y-attr-scatter" onChange={this.pick_yValue_4Scatterplot}>

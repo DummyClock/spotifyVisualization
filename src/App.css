@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+
+#left-visual {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+#x-attr-scatter {
+  margin-bottom: auto;
+}
+
+#y-attr-scatter {
+  margin-top: auto;
+}
+
+.slider-year {
+  display: flex;
+  justify-content: center;
+}
