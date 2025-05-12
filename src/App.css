@@ -37,13 +37,29 @@
   }
 }
 
+#theBox {
+  display: flex;
+  gap: 20px; 
+  width:"auto";
+  height:"auto"
 
-#left-visual, #right-visual {
+}
+
+#left-visual {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding-top: 10px;
   padding-left: 10px;
+  border: 2px solid rgb(0, 0, 0); 
+}
+
+#right-visual {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #343232;
+  /*width: 1000px;*/
+  /*max-width: 1000px;*/
 }
 
 #y-attr-scatter {
