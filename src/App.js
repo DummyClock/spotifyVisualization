@@ -20,13 +20,15 @@ class Dashboard extends Component {
       x2: "",
       y2: "",
       data: [],
-      filtered_data: []
+      scatter_filtered_data: [],
+      bar_filtered_data: []
     };
   }
 
   handleDataUpload = (headers, csv_data) => {
     this.setState({ headers });
     this.setState({ data: csv_data });
+    this.setState({ scatter_filtered_data : csv_data})
     this.slider(csv_data)
   };  
 
@@ -37,6 +39,7 @@ class Dashboard extends Component {
 
   componentDidUpdate() {
     //this.scatter()
+    //console.log(this.state.bar_filtered_data)
   }
 
   slider(csv_data){
@@ -62,7 +65,10 @@ class Dashboard extends Component {
         const f_data = this.state.data.filter(d =>
           d.Year >= val[0] && d.Year <= val[1]
         );
-        this.setState({ filtered_data: f_data });
+        this.setState({ scatter_filtered_data: f_data });
+        if(this.state.x1 !== "" && this.state.y1 !== "") {
+          this.scatter(this.state.x1, this.state.y1)
+        }
       });
   
     // Add slider to page
@@ -78,8 +84,7 @@ class Dashboard extends Component {
   }
 
   scatter(x1, y1) {
-    // const data = this.state.filtered_data;
-    const data = this.state.data;
+    const data = this.state.scatter_filtered_data;
     
     // Append canvas
     var svg = d3.select('.scatterplot')
@@ -139,11 +144,29 @@ class Dashboard extends Component {
     // If dropdowns have selections, Populate canvas w/ data
     if(x1 && y1){
     innerChart.selectAll("circle").data(data).join("circle").attr("r", 5)
-      .attr("fill", "gray")
+      .attr('fill', d => {
+        var selected_songs = this.state.bar_filtered_data.map(item => item["TrackName"])
+        if( selected_songs.includes(d["TrackName"]) ) {
+          return 'red';
+        }
+        return 'gray';
+      })
       .attr("cx", d => xScale(d[x1]))
       .attr("cy", d => yScale(d[y1]))
     }
+    
 
+    var brush = d3.brush().on('start brush', (e) => {
+      var filtered_data = this.state.scatter_filtered_data.filter(point => {
+        var x = xScale(point[x1]) + margin.left
+        var y = yScale(point[y1]) + margin.top
+        return x >= e.selection[0][0] && x <= e.selection[1][0] && y >= e.selection[0][1] && y <= e.selection[1][1]
+      });
+      this.scatter(this.state.x1, this.state.y1)
+      this.setState({bar_filtered_data : filtered_data})
+    });
+  
+    d3.select('svg').call(brush)
     
   }
   
