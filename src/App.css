@@ -38,7 +38,7 @@
 }
 
 
-#left-visual {
+#left-visual, #right-visual {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -57,4 +57,7 @@
 .slider-year {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
+  width: 500px;
+  height: 100px;
 }

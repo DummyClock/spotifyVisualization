@@ -92,7 +92,7 @@ class Dashboard extends Component {
     // Append canvas
     var svg = d3.select('.scatterplot')
       .attr("width", innerWidth + margin.left + margin.right)
-      .attr("height", innerHeight + margin.top + margin.bottom + margin.bottom/6) 
+      .attr("height", innerHeight + margin.top + margin.bottom + 40) 
     var innerChart = svg.selectAll(".inner_chart")
       .data([null])
       .join("g")
@@ -157,69 +157,6 @@ class Dashboard extends Component {
       .attr("cx", d => xScale(d[x1]))
       .attr("cy", d => yScale(d[y1]))
     }
-  }
-
-
-    stack() {
-      // const data = this.state.brushData;
-      const brushData = [
-        { "track_name": "Song A", "artist(s)_name": "Artist 1", "Danceability": 70, "Valence": 60, "Energy": 80 },
-        { "track_name": "Song B", "artist(s)_name": "Artist 2", "Danceability": 65, "Valence": 55, "Energy": 75 },
-        { "track_name": "Song C", "artist(s)_name": "Artist 3", "Danceability": 80, "Valence": 70, "Energy": 90 },
-        { "track_name": "Song D", "artist(s)_name": "Artist 4", "Danceability": 75, "Valence": 65, "Energy": 85 }
-      ];
-      //this.setState({brushData: brushData})
-
-      // Get selected categories
-      const selectedAttr = this.state.y2.map(attr => attr.value)
-
-      // Create SVG
-      const svg = d3.select('.stackedChart')
-        .attr("width", innerWidth + margin.left + margin.right)
-        .attr("height", innerHeight + margin.top + margin.bottom + margin.bottom / 6);
-
-      const innerChart = svg.append("g")
-        .attr("class", "stacked_inner_chart")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      // Scales & Axis
-      var xScale = d3.scaleBand()
-        .domain(selectedAttr)
-        .range([0, innerWidth])
-        .padding(0.2);
-
-      var yScale = d3.scaleLinear()
-        .domain([0, d3.max(selectedAttr, d =>
-          d3.sum(stackedSelections.map(key => d[key]))
-        )])
-        .range([innerHeight, 0]);
-
-      var colorScale = d3.scaleOrdinal().domain(selectedAttr).range(["red", "green", "orange", "yellow", "blue", "purple", "brown"])
-
-
-      var stackGen = d3.stack().keys(selectedAttr),
-        stackedSeries = stackGen(data);
-
-      // Draw rectangles (Not done, from class)
-      d3.selectAll(".container")
-        .selectAll(".mychart")
-        .data(stackedSeries)
-        .join("g")
-        .attr("class",'mychart')
-        .attr("add_bars", function(d){
-          d3.select(this).selectAll("rect")
-          .data(d).join("rect")
-          .attr("x",d=>xScale(d.data.month))
-          .attr("y",d=>yScale(d[1])).attr("height", d=> yScale(d[0])-yScale(d[1]))
-          .attr("width",xScale.bandwidth()).attr("fill",colorScale(d.key))
-        })
-
-        d3.select(".x-axis").attr("transform", "translate(0, 275)").call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")));
-        d3.select(".y-axis").attr("transform", "translate(50, 0)").call(d3.axisLeft(yScale).ticks(5));
-    }
-    
-
-    
 
     var brush = d3.brush().on('start brush', (e) => {
       var filtered_data = this.state.scatter_filtered_data.filter(point => {
@@ -232,8 +169,118 @@ class Dashboard extends Component {
     });
   
     d3.select('svg').call(brush)
-    
   }
+  
+
+
+  
+  stack() {
+    if (!this.state.y2 || this.state.y2.length === 0 || !this.state.bar_filtered_data.length) return;
+    const brushData = this.state.bar_filtered_data;
+    const selectedAttr = this.state.y2.map(attr => attr.value);
+
+    // Recalculate innerWidth based on current margin (important if margin changes)
+    const currentInnerWidth = 460 - margin.left - margin.right;
+    const currentInnerHeight = 400 - margin.top - margin.bottom;
+
+    let svg = d3.select('.stackedChart');
+    if (svg.empty()) {
+      svg = d3.select('.stackedChart')
+        .attr("width", currentInnerWidth + margin.left + margin.right) // Use recalculated width
+        .attr("height", currentInnerHeight + margin.top + margin.bottom + margin.bottom / 6); // Use recalculated height
+    } else {
+      svg.attr("width", currentInnerWidth + margin.left + margin.right)
+        .attr("height", currentInnerHeight + margin.top + margin.bottom + margin.bottom / 6);
+    }
+
+    let innerChart = svg.select(".stacked_inner_chart");
+    if (innerChart.empty()) {
+      innerChart = svg.append("g")
+        .attr("class", "stacked_inner_chart")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    } else {
+      innerChart.attr("transform", `translate(${margin.left}, ${margin.top})`);
+    }
+
+    // Scales & Axis
+    const xScale = d3.scaleBand()
+      .domain(brushData.map(d => d.TrackName))
+      .range([0, currentInnerWidth]) 
+      .padding(0.2);
+
+    const colorScale = d3.scaleOrdinal().domain(selectedAttr).range(["red", "green", "orange", "yellow", "blue", "purple", "brown"]);
+    const stackGen = d3.stack().keys(selectedAttr);
+    const stackedSeries = stackGen(brushData);
+
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(stackedSeries, d => d3.max(d, d => d[1])) * 1.1])
+      .range([currentInnerHeight, 0]); 
+
+  
+    // Draw/update rectangles
+    innerChart.selectAll(".layer")
+      .data(stackedSeries)
+      .join("g")
+      .attr("class", "layer")
+      .attr("fill", d => colorScale(d.key))
+      .selectAll("rect")
+      .data(d => d)
+      .join("rect")
+      .attr("x", d => xScale(d.data.TrackName))
+      .attr("y", d => yScale(d[1]))
+      .attr("height", d => yScale(d[0]) - yScale(d[1]))
+      .attr("width", xScale.bandwidth());
+
+    // Create axes
+    let xAxis = svg.select(".x-axis");
+    if (xAxis.empty()) {
+      xAxis = svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(${margin.left}, ${currentInnerHeight + margin.top})`)
+        .call(d3.axisBottom(xScale).tickFormat(d => d.length > 10 ? d.substring(0, 10) + '...' : d));
+    } else {
+      xAxis.attr("transform", `translate(${margin.left}, ${currentInnerHeight + margin.top})`).call(d3.axisBottom(xScale).tickFormat(d => d.length > 10 ? d.substring(0, 10) + '...' : d));
+    }
+
+    let yAxis = svg.select(".y-axis");
+    if (yAxis.empty()) {
+      yAxis = svg.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .call(d3.axisLeft(yScale).ticks(5));
+    } else {
+      yAxis.attr("transform", `translate(${margin.left}, ${margin.top})`).call(d3.axisLeft(yScale).ticks(5));
+    }
+
+    // Add labels for the axis lines
+    let xAxisLabel = innerChart.select(".x-axis-label");
+    if (xAxisLabel.empty()) {
+      innerChart.append("text")
+        .attr("class", "x-axis-label")
+        .attr("x", currentInnerWidth / 2)
+        .attr("y", currentInnerHeight + margin.bottom)
+        .attr("text-anchor", "middle")
+        .text("Songs");
+    } else {
+      xAxisLabel.attr("x", currentInnerWidth / 2)
+                .attr("y", currentInnerHeight + margin.bottom);
+    }
+
+    let yAxisLabel = innerChart.select(".y-axis-label");
+    if (yAxisLabel.empty()) {
+      innerChart.append("text")
+        .attr("class", "y-axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -currentInnerHeight / 2)
+        .attr("y", -margin.left / 1.5)
+        .attr("text-anchor", "middle")
+        .text("Percentage (%)");
+    } else {
+      yAxisLabel.attr("x", -currentInnerHeight / 2)
+                .attr("y", -margin.left / 1.5);
+    }
+  }
+   
   
 
   // Handle interactive selections for scatterplot
@@ -254,68 +301,76 @@ class Dashboard extends Component {
   render = () => {
     const { dropdown_scatter } = this.state
     const { dropdown_stacked } = this.state
+    const { bar_filtered_data } = this.state
+    const { data } = this.state
 
     return (
-      <div className="dashboard">
+      <div className="dashboard" >
         <FileUpload onDataUpload={this.handleDataUpload} />
+ 
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems:"center"}}>
+          { !data || data.length <= 0 && <h6 style={{g: "10px"}}>Upload a file to get started</h6> }
+          { data.length > 0 &&
+            <div id='left-visual' width="800px" padding="20px" >
+              {/** Y dropdown (Scatter) */}
+              <select name="y-attr-scatter" id="y-attr-scatter" onChange={this.pick_yValue_4Scatterplot}>
+              <option disabled selected value> -- select an option -- </option>
+                {dropdown_scatter.map((attr, index) => (
+                    <option key={index} value={attr}  disabled={this.state.x1 === attr}>
+                      {attr}
+                    </option>
+                ))}
+              </select> 
 
-        <div id='left-visual'>
-          {/** Y dropdown (Scatter) */}
-          <select name="y-attr-scatter" id="y-attr-scatter" onChange={this.pick_yValue_4Scatterplot}>
-          <option disabled selected value> -- select an option -- </option>
-            {dropdown_scatter.map((attr, index) => (
-                <option key={index} value={attr}  disabled={this.state.x1 === attr}>
-                  {attr}
-                </option>
-            ))}
-          </select> 
+              {/** Scatterplot + slider in here */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <svg className='scatterplot'>
+                  <g className='inner_chart' />
+                </svg>
+                <svg className='slider-year'></svg>
+              </div>
 
-          {/** Scatterplot + slider in here */}
-          <g>
-            <svg className='scatterplot' >
-              <g className='inner_chart' />
-            </svg>
-            <svg className='slider-year'></svg>
-          </g>
-
-          {/** X dropdown (Scatter) */}
-          <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
-          <option disabled selected value> -- select an option -- </option>
-            {dropdown_scatter.map((attr, index) => (
-                <option key={index} value={attr} disabled={this.state.y1 === attr}>
-                  {attr}
-                </option>
-            ))}
-          </select> 
-        </div>
+              {/** X dropdown (Scatter) */}
+              <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
+              <option disabled selected value> -- select an option -- </option>
+                {dropdown_scatter.map((attr, index) => (
+                    <option key={index} value={attr} disabled={this.state.y1 === attr}>
+                      {attr}
+                    </option>
+                ))}
+              </select> 
+            </div>
+        }
         {/** ------------------------------------------------------ */}
-        <div id='right-visual'>
+         { data.length > 0 && <div id='right-visual'>
 
-          {/** Scatterplot + slider in here */}
-          <g>
-            <svg className='stackedChart' >
-              <g className='stacked_inner_chart' />
-            </svg>
-            <svg className='slider-streams'></svg>
-          </g>
+            {/** Scatterplot + slider in here */}
+            <g>
+              <svg className='stackedChart' >
+                <g className='stacked_inner_chart' />
+              </svg>
+              <svg className='slider-streams'></svg>
+            </g>
 
-          {/** Dropdown (Stacked) + Legend for Bar Colors*/}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+            {/** Dropdown (Stacked) + Legend for Bar Colors*/}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
 
-            <Select
-              isMulti
-              options={dropdown_stacked}
-              onChange={(selected) => console.log(selected)}
-            />
+              <p>Categories</p>
+              <svg width="100" height="200">
+                <h3>Placeholder</h3>
+              </svg>
+              <div style={{ width: '200px'}}>
+                <Select
+                  isMulti
+                  options={dropdown_stacked}
+                  onChange={(selected) => {
+                    this.setState({ y2: selected }, () => this.stack());
+                  }}
+                />
+              </div>
 
-
-            <p>Categories</p>
-            <svg width="100" height="200">
-              <h3>Placeholder</h3>
-            </svg>
-
-            
-          </div>
+            </div>
+          </div>}
         </div>
         {/** Will use later 
           <div id='left-visual'>
