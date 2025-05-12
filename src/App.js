@@ -14,7 +14,7 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       headers: ["track_name","artist(s)_name","artist_count","released_year","released_month","released_day","in_spotify_playlists","in_spotify_charts","streams","in_apple_playlists","in_apple_charts","in_deezer_playlists","in_deezer_charts","in_shazam_charts","bpm","key","mode","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%","cover_url"],
-      dropdown_scatter: ["bpm","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%"],
+      dropdown_scatter: ["Danceability","Valence","Energy","Acousticness","Instrumentalness","Liveness","Speechiness"],
       x1: "",
       y1: "",
       x2: "",
@@ -27,15 +27,57 @@ class Dashboard extends Component {
   handleDataUpload = (headers, csv_data) => {
     this.setState({ headers });
     this.setState({ data: csv_data });
+    this.scatter()
+    this.slider(csv_data)
   };  
 
   componentDidMount() {
     // should remove eventually from mounting
     this.scatter()
+    //this.slider()
   }
 
   componentDidUpdate() {
-    this.scatter()
+    //this.scatter()
+  }
+
+  slider(csv_data){
+    var data = this.state.data;
+    if(data.length === 0) {data = csv_data};
+    // Draw Gridlines
+    //d3.select(".y-axis").selectAll(".tick line").attr("x1", innerWidth).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
+    //d3.select(".x-axis").selectAll(".tick line").attr("y1", -innerHeight).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
+    var min_year = d3.min(data, d => d.Year)
+    var max_year = d3.max(data, d => d.Year)
+    console.log(data)
+    // Define a year slider
+    const sliderRange = sliderBottom()
+      .min(min_year)
+      .max(max_year)
+      .step(1)
+      .width(300)
+      .ticks((max_year - min_year) / 10)
+      .tickFormat(d3.format(""))
+      .default([max_year, min_year])
+      //.displayValue(false)
+      .fill('#85bb65')
+      .on('onchange', val => {
+        const f_data = this.state.data.filter(d =>
+          d.Year >= val[0] && d.Year <= val[1]
+        );
+        this.setState({ filtered_data: f_data });
+      });
+  
+    // Add slider to page
+    const gRange = d3.select('.slider-year')
+      .attr('width', 500)
+      .attr('height', 100)
+      .selectAll('.slider-g')
+      .data([null])
+      .join('g')
+      .attr('class', 'slider-g')
+      .attr('transform', 'translate(90,30)');
+    gRange.call(sliderRange);
   }
 
   scatter() {
@@ -107,43 +149,7 @@ class Dashboard extends Component {
       .attr("cy", d => yScale(d[y1]))
     }
 
-    // Draw Gridlines
-    //d3.select(".y-axis").selectAll(".tick line").attr("x1", innerWidth).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
-    //d3.select(".x-axis").selectAll(".tick line").attr("y1", -innerHeight).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
-    var min_year = d3.min(data, d => d.Year)
-    var max_year = d3.max(data, d => d.Year)
-    console.log(data)
-    console.log(`${min_year} & ${max_year}`)
-    // Define a year slider
-    const sliderRange = sliderBottom()
-      .min(min_year)
-      .max(max_year)
-      .step(1)
-      .width(1000)
-      .ticks(data.length)
-      .tickFormat(d3.format(""))
-      .default([
-        min_year,
-        max_year
-      ])
-      .fill('#85bb65')
-      .on('onchange', val => {
-        const f_data = this.state.data.filter(d =>
-          d.Year >= val[0] && d.Year <= val[1]
-        );
-        this.setState({ filtered_data: f_data });
-      });
-  
-    // Add slider to page
-    const gRange = d3.select('.slider-year')
-      .attr('width', 500)
-      .attr('height', 100)
-      .selectAll('.slider-g')
-      .data([null])
-      .join('g')
-      .attr('class', 'slider-g')
-      .attr('transform', 'translate(90,30)');
-    gRange.call(sliderRange);
+    
   }
   
 
