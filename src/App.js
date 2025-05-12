@@ -231,6 +231,28 @@ class Dashboard extends Component {
       .attr("height", d => yScale(d[0]) - yScale(d[1]))
       .attr("width", xScale.bandwidth());
 
+    // Add Legend
+    const legend = d3.select(".stacked-legend")
+      .selectAll(".legend-item")
+      .data(selectedAttr)
+      .join("g")
+      .attr("class", "legend-item")
+      .attr("transform", (d, i) => `translate(10,${i * 20 + 10})`);
+
+        // Add colored rectangles
+    legend.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .attr("fill", d => colorScale(d));
+
+        // Add text labels
+    legend.append("text")
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("font-size", "12px")
+      .text(d => d);
+
     // Create axes
     let xAxis = svg.select(".x-axis");
     if (xAxis.empty()) {
@@ -356,9 +378,7 @@ class Dashboard extends Component {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
 
               <p>Categories</p>
-              <svg width="100" height="200">
-                <h3>Placeholder</h3>
-              </svg>
+              <svg className="stacked-legend" width="150" height={200}></svg>
               <div style={{ width: '200px'}}>
                 <Select
                   isMulti
