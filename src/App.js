@@ -27,13 +27,11 @@ class Dashboard extends Component {
   handleDataUpload = (headers, csv_data) => {
     this.setState({ headers });
     this.setState({ data: csv_data });
-    this.scatter()
     this.slider(csv_data)
   };  
 
   componentDidMount() {
     // should remove eventually from mounting
-    this.scatter()
     //this.slider()
   }
 
@@ -49,7 +47,6 @@ class Dashboard extends Component {
     //d3.select(".x-axis").selectAll(".tick line").attr("y1", -innerHeight).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
     var min_year = d3.min(data, d => d.Year)
     var max_year = d3.max(data, d => d.Year)
-    console.log(data)
     // Define a year slider
     const sliderRange = sliderBottom()
       .min(min_year)
@@ -80,10 +77,9 @@ class Dashboard extends Component {
     gRange.call(sliderRange);
   }
 
-  scatter() {
+  scatter(x1, y1) {
     // const data = this.state.filtered_data;
     const data = this.state.data;
-    const { x1, y1 } = this.state;
     console.log(x1, y1)
     
     // Append canvas
@@ -156,9 +152,11 @@ class Dashboard extends Component {
   // Handle interactive selections for scatterplot
   pick_xValue_4Scatterplot = (event) => {
     this.setState({ x1: event.target.value })
+    if(this.state.y1 !== ""){this.scatter(event.target.value, this.state.y1)}
   }
   pick_yValue_4Scatterplot = (event) => {
     this.setState({ y1: event.target.value })
+    if(this.state.x1 !== ""){this.scatter(this.state.x1, event.target.value)}
   }
 
   // Handle interactive selections for Stacked Bar Chart
