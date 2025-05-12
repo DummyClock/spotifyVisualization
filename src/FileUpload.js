@@ -28,7 +28,7 @@ class FileUpload extends Component {
             "Liveness":parseInt(d["liveness_%"]),
             "Speechiness":parseInt(d["speechiness_%"]),
           }));
-          this.props.onDataUpload([], formattedData); // Pass the formatted data to the parent component
+          this.props.onDataUpload(formattedData); // Pass the formatted data to the parent component
           URL.revokeObjectURL(url); // Release the Blob URL to prevent memory leaks
         }).catch(console.error); // Handle any errors during CSV parsing
       };

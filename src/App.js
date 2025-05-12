@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import FileUpload from './FileUpload';
 import { sliderBottom } from 'd3-simple-slider';
 import * as d3 from 'd3';
@@ -14,7 +14,6 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      headers: ["track_name","artist(s)_name","artist_count","released_year","released_month","released_day","in_spotify_playlists","in_spotify_charts","streams","in_apple_playlists","in_apple_charts","in_deezer_playlists","in_deezer_charts","in_shazam_charts","bpm","key","mode","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%","cover_url"],
       dropdown_scatter: ["Danceability","Valence","Energy","Acousticness","Instrumentalness","Liveness","Speechiness"],
       dropdown_stacked: ["Danceability","Valence","Energy","Acousticness","Instrumentalness","Liveness","Speechiness"].map(item => ({ value: item, label: item })),
       x1: "",
@@ -27,25 +26,16 @@ class Dashboard extends Component {
     };
   }
 
-
-  handleDataUpload = (headers, csv_data) => {
-    this.setState({ headers });
+  handleDataUpload = (csv_data) => {
+    this.slider(csv_data)
     this.setState({ data: csv_data });
     this.setState({ scatter_filtered_data : csv_data})
-    this.slider(csv_data)
-  };  
+  };
 
-  componentDidMount() {
-    // should remove eventually from mounting
-    //this.slider()
-  }
-
-  componentDidUpdate() {
-    //this.scatter()
-    //console.log(this.state.bar_filtered_data)
-  }
+  componentDidMount(){}
 
   slider(csv_data){
+    const width = 400
     var data = this.state.data;
     if(data.length === 0) {data = csv_data};
     // Draw Gridlines
@@ -58,11 +48,10 @@ class Dashboard extends Component {
       .min(min_year)
       .max(max_year)
       .step(1)
-      .width(500)
+      .width(width)
       .ticks((max_year - min_year) / 10)
       .tickFormat(d3.format(""))
       .default([max_year, min_year])
-      //.displayValue(false)
       .fill('#85bb65')
       .on('onchange', val => {
         const f_data = this.state.data.filter(d =>
@@ -73,17 +62,8 @@ class Dashboard extends Component {
           this.scatter(this.state.x1, this.state.y1)
         }
       });
-  
     // Add slider to page
-    const gRange = d3.select('.slider-year')
-      .attr('width', 500)
-      .attr('height', 100)
-      .selectAll('.slider-g')
-      .data([null])
-      .join('g')
-      .attr('class', 'slider-g')
-      .attr('transform', 'translate(90,30)');
-    gRange.call(sliderRange);
+    d3.select('.slider-g').call(sliderRange);
   }
 
   scatter(x1, y1) {
@@ -144,8 +124,8 @@ class Dashboard extends Component {
     if(x1 && y1){
     innerChart.selectAll("circle").data(data).join("circle").attr("r", 5)
       .attr('fill', d => {
-        var selected_songs = this.state.bar_filtered_data.map(item => item["TrackName"])
-        if( selected_songs.includes(d["TrackName"]) ) {
+        var selected_songs = this.state.bar_filtered_data.map(item => item["TrackName"]+item['ArtistName'])
+        if( selected_songs.includes(d["TrackName"]+d["ArtistName"]) ) {
           return 'red';
         }
         return 'gray';
@@ -209,7 +189,7 @@ class Dashboard extends Component {
   }
     
   stack() {
-    if (!this.state.y2 || this.state.y2.length === 0 || !this.state.bar_filtered_data.length) return;
+    if ((!this.state.y2 || this.state.y2.length === 0) || this.state.bar_filtered_data.length === 0) {return};
     const brushData = this.state.bar_filtered_data;
     const selectedAttr = this.state.y2.map(attr => attr.value);
 
@@ -404,7 +384,7 @@ class Dashboard extends Component {
         <FileUpload onDataUpload={this.handleDataUpload} />
  
         <div id="theBox">
-          { !data || data.length <= 0 && <p style={{textAlign: 'center', fontStyle: 'italic',}}>Upload a file to get started</p> }
+          { (!data || data.length <= 0) && <p style={{textAlign: 'center', fontStyle: 'italic',}}>Upload a file to get started</p> }
           { data.length > 0 &&
             <div id='left-visual' style={{"width":"auto", "height":"auto", "padding":"20px"}}>
               {/** Y dropdown (Scatter) */}
@@ -419,10 +399,12 @@ class Dashboard extends Component {
 
               {/** Scatterplot + slider in here */}
               <div>
-                <svg className='scatterplot' style={{ width: '100%' }}>
+                <svg className='scatterplot'>
                   <g className='inner_chart' />
                 </svg>
-                <svg className='slider-year'></svg>
+                <svg className='slider-year'>
+                  <g className = 'slider-g' transform='translate(30,30)'></g>
+                </svg>
               </div>
 
               {/** X dropdown (Scatter) */}
