@@ -80,7 +80,6 @@ class Dashboard extends Component {
   scatter(x1, y1) {
     // const data = this.state.filtered_data;
     const data = this.state.data;
-    console.log(x1, y1)
     
     // Append canvas
     var svg = d3.select('.scatterplot')
@@ -179,7 +178,7 @@ class Dashboard extends Component {
           <select name="y-attr-scatter" id="y-attr-scatter" onChange={this.pick_yValue_4Scatterplot}>
           <option disabled selected value> -- select an option -- </option>
             {dropdown_scatter.map((attr, index) => (
-                <option key={index} value={attr.toLowerCase()}  disabled={this.state.x1 === attr.toLowerCase()}>
+                <option key={index} value={attr}  disabled={this.state.x1 === attr}>
                   {attr}
                 </option>
             ))}
@@ -197,7 +196,7 @@ class Dashboard extends Component {
           <select name="x-attr-scatter" id="x-attr-scatter" onChange={this.pick_xValue_4Scatterplot}>
           <option disabled selected value> -- select an option -- </option>
             {dropdown_scatter.map((attr, index) => (
-                <option key={index} value={attr.toLowerCase()} disabled={this.state.y1 === attr.toLowerCase()}>
+                <option key={index} value={attr} disabled={this.state.y1 === attr}>
                   {attr}
                 </option>
             ))}

@@ -25,7 +25,7 @@ class FileUpload extends Component {
             "Energy":parseInt(d["energy_%"]),
             "Acousticness":parseInt(d["acousticness_%"]),
             "Instrumentalness":parseInt(d["instrumentalness_%"]),
-            "Livenesss":parseInt(d["liveness_%"]),
+            "Liveness":parseInt(d["liveness_%"]),
             "Speechiness":parseInt(d["speechiness_%"]),
           }));
           this.props.onDataUpload([], formattedData); // Pass the formatted data to the parent component
