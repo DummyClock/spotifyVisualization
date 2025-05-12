@@ -28,7 +28,7 @@ class FileUpload extends Component {
             "Livenesss":parseInt(d["liveness_%"]),
             "Speechiness":parseInt(d["speechiness_%"]),
           }));
-          this.props.set_data(formattedData); // Pass the formatted data to the parent component
+          this.props.onDataUpload([], formattedData); // Pass the formatted data to the parent component
           URL.revokeObjectURL(url); // Release the Blob URL to prevent memory leaks
         }).catch(console.error); // Handle any errors during CSV parsing
       };
@@ -39,7 +39,7 @@ class FileUpload extends Component {
   render = () => (
     <div style={{ backgroundColor: "#f0f0f0", padding: 20 }}>
       <h2>Spotify Music Attribute Visualization</h2>
-      <h8>Upload a csv file</h8><p></p>
+      <h3>Upload a csv file</h3><p></p>
       <form onSubmit={this.handleFileSubmit}>
         <input type="file" accept=".csv" onChange={(e) => this.setState({ file: e.target.files[0] })} />
         <button type="submit">Upload</button>

@@ -19,95 +19,14 @@ class Dashboard extends Component {
       y1: "",
       x2: "",
       y2: "",
-      filtered_data: [
-      {
-        track_name: "Seven (feat. Latto) (Explicit Ver.)", artist_s_name: "Latto, Jung Kook", artist_count: 2,
-        released_year: 2023, released_month: 7, released_day: 14, in_spotify_playlists: 553,
-        in_spotify_charts: 147, streams: 141381703, in_apple_playlists: 43, in_apple_charts: 263,
-        in_deezer_playlists: 45, in_deezer_charts: 10, in_shazam_charts: 826, bpm: 125, key: "B", mode: "Major",
-        "danceability_%": 80, "valence_%": 89, "energy_%": 83, "acousticness_%": 31, "instrumentalness_%": 0,
-        "liveness_%": 8, "speechiness_%": 4, cover_url: "Not Found"
-      },
-      {
-        track_name: "LALA", artist_s_name: "Myke Towers", artist_count: 1, released_year: 2023, released_month: 3,
-        released_day: 23, in_spotify_playlists: 1474, in_spotify_charts: 48, streams: 133716286,
-        in_apple_playlists: 48, in_apple_charts: 126, in_deezer_playlists: 58, in_deezer_charts: 14,
-        in_shazam_charts: 382, bpm: 92, key: "C#", mode: "Major", "danceability_%": 71, "valence_%": 61,
-        "energy_%": 74, "acousticness_%": 7, "instrumentalness_%": 0, "liveness_%": 10, "speechiness_%": 4,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b2730656d5ce813ca3cc4b677e05"
-      },
-      {
-        track_name: "vampire", artist_s_name: "Olivia Rodrigo", artist_count: 1, released_year: 2023, released_month: 6,
-        released_day: 30, in_spotify_playlists: 1397, in_spotify_charts: 113, streams: 140003974,
-        in_apple_playlists: 94, in_apple_charts: 207, in_deezer_playlists: 91, in_deezer_charts: 14,
-        in_shazam_charts: 949, bpm: 138, key: "F", mode: "Major", "danceability_%": 51, "valence_%": 32,
-        "energy_%": 53, "acousticness_%": 17, "instrumentalness_%": 0, "liveness_%": 31, "speechiness_%": 6,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d"
-      },
-      {
-        track_name: "Cruel Summer", artist_s_name: "Taylor Swift", artist_count: 1, released_year: 2019, released_month: 8,
-        released_day: 23, in_spotify_playlists: 7858, in_spotify_charts: 100, streams: 800840817,
-        in_apple_playlists: 116, in_apple_charts: 207, in_deezer_playlists: 125, in_deezer_charts: 12,
-        in_shazam_charts: 548, bpm: 170, key: "A", mode: "Major", "danceability_%": 55, "valence_%": 58,
-        "energy_%": 72, "acousticness_%": 11, "instrumentalness_%": 0, "liveness_%": 11, "speechiness_%": 15,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647"
-      },
-      {
-        track_name: "WHERE SHE GOES", artist_s_name: "Bad Bunny", artist_count: 1, released_year: 2023, released_month: 5,
-        released_day: 18, in_spotify_playlists: 3133, in_spotify_charts: 50, streams: 303236322,
-        in_apple_playlists: 84, in_apple_charts: 133, in_deezer_playlists: 87, in_deezer_charts: 15,
-        in_shazam_charts: 425, bpm: 144, key: "A", mode: "Minor", "danceability_%": 65, "valence_%": 23,
-        "energy_%": 80, "acousticness_%": 14, "instrumentalness_%": 63, "liveness_%": 11, "speechiness_%": 6,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273ab5c9cd818ad6ed3e9b79cd1"
-      }
-    ],
-    original_data: [
-      {
-        track_name: "Seven (feat. Latto) (Explicit Ver.)", artist_s_name: "Latto, Jung Kook", artist_count: 2,
-        released_year: 2023, released_month: 7, released_day: 14, in_spotify_playlists: 553,
-        in_spotify_charts: 147, streams: 141381703, in_apple_playlists: 43, in_apple_charts: 263,
-        in_deezer_playlists: 45, in_deezer_charts: 10, in_shazam_charts: 826, bpm: 125, key: "B", mode: "Major",
-        "danceability_%": 80, "valence_%": 89, "energy_%": 83, "acousticness_%": 31, "instrumentalness_%": 0,
-        "liveness_%": 8, "speechiness_%": 4, cover_url: "Not Found"
-      },
-      {
-        track_name: "LALA", artist_s_name: "Myke Towers", artist_count: 1, released_year: 2023, released_month: 3,
-        released_day: 23, in_spotify_playlists: 1474, in_spotify_charts: 48, streams: 133716286,
-        in_apple_playlists: 48, in_apple_charts: 126, in_deezer_playlists: 58, in_deezer_charts: 14,
-        in_shazam_charts: 382, bpm: 92, key: "C#", mode: "Major", "danceability_%": 71, "valence_%": 61,
-        "energy_%": 74, "acousticness_%": 7, "instrumentalness_%": 0, "liveness_%": 10, "speechiness_%": 4,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b2730656d5ce813ca3cc4b677e05"
-      },
-      {
-        track_name: "vampire", artist_s_name: "Olivia Rodrigo", artist_count: 1, released_year: 2023, released_month: 6,
-        released_day: 30, in_spotify_playlists: 1397, in_spotify_charts: 113, streams: 140003974,
-        in_apple_playlists: 94, in_apple_charts: 207, in_deezer_playlists: 91, in_deezer_charts: 14,
-        in_shazam_charts: 949, bpm: 138, key: "F", mode: "Major", "danceability_%": 51, "valence_%": 32,
-        "energy_%": 53, "acousticness_%": 17, "instrumentalness_%": 0, "liveness_%": 31, "speechiness_%": 6,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273e85259a1cae29a8d91f2093d"
-      },
-      {
-        track_name: "Cruel Summer", artist_s_name: "Taylor Swift", artist_count: 1, released_year: 2019, released_month: 8,
-        released_day: 23, in_spotify_playlists: 7858, in_spotify_charts: 100, streams: 800840817,
-        in_apple_playlists: 116, in_apple_charts: 207, in_deezer_playlists: 125, in_deezer_charts: 12,
-        in_shazam_charts: 548, bpm: 170, key: "A", mode: "Major", "danceability_%": 55, "valence_%": 58,
-        "energy_%": 72, "acousticness_%": 11, "instrumentalness_%": 0, "liveness_%": 11, "speechiness_%": 15,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647"
-      },
-      {
-        track_name: "WHERE SHE GOES", artist_s_name: "Bad Bunny", artist_count: 1, released_year: 2023, released_month: 5,
-        released_day: 18, in_spotify_playlists: 3133, in_spotify_charts: 50, streams: 303236322,
-        in_apple_playlists: 84, in_apple_charts: 133, in_deezer_playlists: 87, in_deezer_charts: 15,
-        in_shazam_charts: 425, bpm: 144, key: "A", mode: "Minor", "danceability_%": 65, "valence_%": 23,
-        "energy_%": 80, "acousticness_%": 14, "instrumentalness_%": 63, "liveness_%": 11, "speechiness_%": 6,
-        cover_url: "https://i.scdn.co/image/ab67616d0000b273ab5c9cd818ad6ed3e9b79cd1"
-      }
-    ],
+      data: [],
+      filtered_data: []
     };
   }
 
-  handleDataUpload = (headers) => {
+  handleDataUpload = (headers, csv_data) => {
     this.setState({ headers });
+    this.setState({ data: csv_data });
   };  
 
   componentDidMount() {
@@ -120,7 +39,8 @@ class Dashboard extends Component {
   }
 
   scatter() {
-    const data = this.state.filtered_data;
+    // const data = this.state.filtered_data;
+    const data = this.state.data;
     const { x1, y1 } = this.state;
     console.log(x1, y1)
     
@@ -190,23 +110,26 @@ class Dashboard extends Component {
     // Draw Gridlines
     //d3.select(".y-axis").selectAll(".tick line").attr("x1", innerWidth).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
     //d3.select(".x-axis").selectAll(".tick line").attr("y1", -innerHeight).attr("stroke-dasharray", "2,2").attr("stroke", "lightgray");
-  
+    var min_year = d3.min(data, d => d.Year)
+    var max_year = d3.max(data, d => d.Year)
+    console.log(data)
+    console.log(`${min_year} & ${max_year}`)
     // Define a year slider
     const sliderRange = sliderBottom()
-      .min(d3.min(data, d => d.released_year))
-      .max(d3.max(data, d => d.released_year))
+      .min(min_year)
+      .max(max_year)
       .step(1)
-      .width(300)
+      .width(1000)
       .ticks(data.length)
       .tickFormat(d3.format(""))
       .default([
-        d3.min(data, d => d.released_year),
-        d3.max(data, d => d.released_year)
+        min_year,
+        max_year
       ])
       .fill('#85bb65')
       .on('onchange', val => {
-        const f_data = this.state.original_data.filter(d =>
-          d.released_year >= val[0] && d.released_year <= val[1]
+        const f_data = this.state.data.filter(d =>
+          d.Year >= val[0] && d.Year <= val[1]
         );
         this.setState({ filtered_data: f_data });
       });
