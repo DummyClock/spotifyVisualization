@@ -3,6 +3,7 @@ import FileUpload from './FileUpload';
 import { sliderBottom } from 'd3-simple-slider';
 import * as d3 from 'd3';
 import './App.css';
+import Select from 'react-select';
 
 // Global Dimensions & margins
 var margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -15,6 +16,7 @@ class Dashboard extends Component {
     this.state = {
       headers: ["track_name","artist(s)_name","artist_count","released_year","released_month","released_day","in_spotify_playlists","in_spotify_charts","streams","in_apple_playlists","in_apple_charts","in_deezer_playlists","in_deezer_charts","in_shazam_charts","bpm","key","mode","danceability_%","valence_%","energy_%","acousticness_%","instrumentalness_%","liveness_%","speechiness_%","cover_url"],
       dropdown_scatter: ["Danceability","Valence","Energy","Acousticness","Instrumentalness","Liveness","Speechiness"],
+      dropdown_stacked: ["Danceability","Valence","Energy","Acousticness","Instrumentalness","Liveness","Speechiness"].map(item => ({ value: item, label: item })),
       x1: "",
       y1: "",
       x2: "",
@@ -23,6 +25,7 @@ class Dashboard extends Component {
       filtered_data: []
     };
   }
+
 
   handleDataUpload = (headers, csv_data) => {
     this.setState({ headers });
@@ -143,9 +146,68 @@ class Dashboard extends Component {
       .attr("cx", d => xScale(d[x1]))
       .attr("cy", d => yScale(d[y1]))
     }
-
-    
   }
+
+
+    stack() {
+      // const data = this.state.brushData;
+      const brushData = [
+        { "track_name": "Song A", "artist(s)_name": "Artist 1", "Danceability": 70, "Valence": 60, "Energy": 80 },
+        { "track_name": "Song B", "artist(s)_name": "Artist 2", "Danceability": 65, "Valence": 55, "Energy": 75 },
+        { "track_name": "Song C", "artist(s)_name": "Artist 3", "Danceability": 80, "Valence": 70, "Energy": 90 },
+        { "track_name": "Song D", "artist(s)_name": "Artist 4", "Danceability": 75, "Valence": 65, "Energy": 85 }
+      ];
+      //this.setState({brushData: brushData})
+
+      // Get selected categories
+      const selectedAttr = this.state.y2.map(attr => attr.value)
+
+      // Create SVG
+      const svg = d3.select('.stackedChart')
+        .attr("width", innerWidth + margin.left + margin.right)
+        .attr("height", innerHeight + margin.top + margin.bottom + margin.bottom / 6);
+
+      const innerChart = svg.append("g")
+        .attr("class", "stacked_inner_chart")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Scales & Axis
+      var xScale = d3.scaleBand()
+        .domain(selectedAttr)
+        .range([0, innerWidth])
+        .padding(0.2);
+
+      var yScale = d3.scaleLinear()
+        .domain([0, d3.max(selectedAttr, d =>
+          d3.sum(stackedSelections.map(key => d[key]))
+        )])
+        .range([innerHeight, 0]);
+
+      var colorScale = d3.scaleOrdinal().domain(selectedAttr).range(["red", "green", "orange", "yellow", "blue", "purple", "brown"])
+
+
+      var stackGen = d3.stack().keys(selectedAttr),
+        stackedSeries = stackGen(data);
+
+      // Draw rectangles (Not done, from class)
+      d3.selectAll(".container")
+        .selectAll(".mychart")
+        .data(stackedSeries)
+        .join("g")
+        .attr("class",'mychart')
+        .attr("add_bars", function(d){
+          d3.select(this).selectAll("rect")
+          .data(d).join("rect")
+          .attr("x",d=>xScale(d.data.month))
+          .attr("y",d=>yScale(d[1])).attr("height", d=> yScale(d[0])-yScale(d[1]))
+          .attr("width",xScale.bandwidth()).attr("fill",colorScale(d.key))
+        })
+
+        d3.select(".x-axis").attr("transform", "translate(0, 275)").call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")));
+        d3.select(".y-axis").attr("transform", "translate(50, 0)").call(d3.axisLeft(yScale).ticks(5));
+    }
+    
+
   
 
   // Handle interactive selections for scatterplot
@@ -158,16 +220,14 @@ class Dashboard extends Component {
     if(this.state.x1 !== ""){this.scatter(this.state.x1, event.target.value)}
   }
 
-  // Handle interactive selections for Stacked Bar Chart
-  pick_xValue_4Stacked = (event) => {
-    this.setState({ x1:event.target.value })
-  }
-  pick_yValue_4Stacked = (event) => {
-    this.setState({ y1: event.target.value })
+  // Handle interactive selection for Stacked Bar Chart
+  pick_4Stacked = (event) => {
+    this.setState({ y2: event.target.value }) // stores an array
   }
 
   render = () => {
     const { dropdown_scatter } = this.state
+    const { dropdown_stacked } = this.state
 
     return (
       <div className="dashboard">
@@ -203,6 +263,34 @@ class Dashboard extends Component {
           </select> 
         </div>
         {/** ------------------------------------------------------ */}
+        <div id='right-visual'>
+
+          {/** Scatterplot + slider in here */}
+          <g>
+            <svg className='stackedChart' >
+              <g className='stacked_inner_chart' />
+            </svg>
+            <svg className='slider-streams'></svg>
+          </g>
+
+          {/** Dropdown (Stacked) + Legend for Bar Colors*/}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+
+            <Select
+              isMulti
+              options={dropdown_stacked}
+              onChange={(selected) => console.log(selected)}
+            />
+
+
+            <p>Categories</p>
+            <svg width="100" height="200">
+              <h3>Placeholder</h3>
+            </svg>
+
+            
+          </div>
+        </div>
         {/** Will use later 
           <div id='left-visual'>
                     {/** X dropdown (stacked) }
